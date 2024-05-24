@@ -23,13 +23,13 @@ async function connectToMongoDB() {
   }
 }
 
-module.exports = cds.service.impl(async function () {
+module.exports = async (srv) => {
   // Connect to MongoDB when the service starts
   await connectToMongoDB();
 
-  const { fieldUserService } = this.entities;
+  // const { fieldUserService } = this.entities;
 
-  this.on("READ", fieldUserService, async (req) => {
+  srv.on("READ", "fieldUserService", async (req) => {
     try {
       const users = await mongoCollection.find({}).toArray();
 
@@ -55,10 +55,43 @@ module.exports = cds.service.impl(async function () {
     }
   });
 
-  this.on("disconnect", async () => {
+  srv.on("PUT", "fieldUserService", async (req) => {
+    const id = req.params[0].id;
+    const { username, name, email, departments, createdBy, phone } = req.data;
+
+    // Prepare the updated data object
+    const updatedData = {
+      username,
+      name,
+      email,
+      createdBy,
+      phone,
+    };
+
+    const departmentUpdate = {
+      "departments.0.name": departments,
+    };
+    try {
+      const result = await mongoCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { ...updatedData, ...departmentUpdate } }
+      );
+
+      if (result.modifiedCount === 1) {
+        console.log(`Successfully updated user with ID: ${id}`);
+        return { message: "User updated successfully" };
+      } else {
+        req.reject(404, "User not found or no changes made");
+      }
+    } catch (err) {
+      console.error("Failed to update data in MongoDB", err);
+      req.reject(500, "Failed to update data in MongoDB");
+    }
+  });
+  srv.on("disconnect", async () => {
     if (client) {
       await client.close();
       console.log("Disconnected from MongoDB.");
     }
   });
-});
+};
