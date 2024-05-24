@@ -31,7 +31,27 @@ module.exports = async (srv) => {
 
   srv.on("READ", "fieldUserService", async (req) => {
     try {
-      const users = await mongoCollection.find({}).toArray();
+      let query = { type: 2 }; //those who have type:2 that FU we need to show on UI 
+
+     
+      if (req.query.SELECT.where) {
+        const whereClause = req.query.SELECT.where;
+        for (let i = 0; i < whereClause.length; i += 2) {
+          // Check for field and value pairs
+          if (whereClause[i].ref && whereClause[i + 1] === "=") {
+            const field = whereClause[i].ref[0];
+            const value = whereClause[i + 2].val;
+            query[field] = value;
+            i++;
+          }
+        }
+      }
+
+      console.log("Query based on conditions:", query);
+
+      // Fetch users based on constructed query
+      const users = await mongoCollection.find(query).toArray();
+      console.log("Fetched users:", users);
 
       for (const user of users) {
         if (user.departments && user.departments.length > 0) {
