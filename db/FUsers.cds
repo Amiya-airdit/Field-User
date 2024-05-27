@@ -1,22 +1,52 @@
 namespace FieldUsersApplication;
 
-entity User {
-    key id              : String(24); // Using String with length 24 to represent ObjectId
-        username        : String(100); // Assuming a reasonable length for username
-        type            : Integer; // Integer for the type field
-        createdDateTime : Timestamp; // Timestamp for the createdDateTime field
-        imageurl        : String(255) default null; // Assuming a reasonable length for URL
-        adminType       : String(100); // Assuming a reasonable length for adminType
-        isDeleted       : Boolean default null; // Boolean for isDeleted field
-        email           : String(255); // Assuming a reasonable length for email
-        name            : String(100); // Assuming a reasonable length for name
-        departments     : Composition of many Department
-                              on departments.user = $self;
-        mobileNo        : Integer;
+
+//only read and update:-   Users Table // only show whose {type:2} i.e field user
+
+entity Users {
+    name                              : String;
+    email                             : String;
+    phone                             : String;
+    // departments                       : Association to many Departments
+    //                                         on departments.ID = $self.departments.ID;
+    isDeleted                         : Boolean;
+    adminType                         : Integer;
+    // privilege                        : Privilege;
+    imageurl                          : String;
+    isUserLocatorActive               : Boolean;
+    selectedGroupList                 : array of String;
+    isUserUpdatePermissionActive      : Boolean;
+    admingroup                        : String;
+    assignedLayers                    : array of String;
+    zone                              : String;
+    vender                            : String;
+    adminlist                         : array of String;
+    createdBy                         : String;
+    createdByMailID                   : String;
+    isFirstLogin                      : Boolean;
+    deviceDetails                     : array of String;
+    lastLoggedInTime                  : DateTime;
+    username                          : String;
+    type                              : Integer;
+    password                          : String;
+    doj                               : DateTime;
+    dob                               : DateTime;
+    createdDateTime                   : DateTime;
+    accountLockedOn                   : DateTime;
+    numberOfAttemptsWithWrongPassword : Integer;
+    isAccountLocked                   : Boolean;
 }
 
-entity Department {
-    key id   : String(24); // Using String with length 24 to represent ObjectId
-        name : String(100); // Assuming a reasonable length for department name
-        user : Association to User
+entity Departments {
+    key name            : String;
+        groupadminList  : array of String;
+        isMdpeQU        : Boolean;
+        isSteelQU       : Boolean;
+        isQUAssigned    : Boolean;
+        postalcode      : String;
+        applicationType : String;
+        mapType         : String;
+        createdDateTime : DateTime;
+        isDeleted       : Boolean default false;
+        description     : String;
 }

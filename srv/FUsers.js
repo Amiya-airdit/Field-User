@@ -1,5 +1,5 @@
 const cds = require("@sap/cds");
-const { MongoClient, ObjectId } = require("mongodb");
+const { MongoClient} = require("mongodb");
 
 // MongoDB connection URI
 const uri = "mongodb://Amiya:Amiya1999@74.225.222.62:27017/";
@@ -16,7 +16,7 @@ async function connectToMongoDB() {
   try {
     await client.connect();
     const database = client.db("Pratham");
-    mongoCollection = database.collection("Field Users");
+    mongoCollection = database.collection("Users");
     console.log("Connected to MongoDB!");
   } catch (err) {
     console.error("Failed to connect to MongoDB", err);
@@ -31,9 +31,9 @@ module.exports = async (srv) => {
 
   srv.on("READ", "fieldUserService", async (req) => {
     try {
-      let query = { type: 2 }; //those who have type:2 that FU we need to show on UI 
+      let query = { type: 2 }; // Initialize query with a default filter
 
-     
+      // Extract conditions from the req.query.SELECT.where clause if it exists
       if (req.query.SELECT.where) {
         const whereClause = req.query.SELECT.where;
         for (let i = 0; i < whereClause.length; i += 2) {
@@ -67,7 +67,7 @@ module.exports = async (srv) => {
         console.log(`User: ${user.username}`);
         console.log(`Department Name: ${user.departments}`);
       });
-
+       users['$count'] = users.length
       return users;
     } catch (err) {
       console.error("Failed to fetch data from MongoDB", err);
@@ -76,15 +76,13 @@ module.exports = async (srv) => {
   });
 
   srv.on("PUT", "fieldUserService", async (req) => {
-    const id = req.params[0].id;
-    const { username, name, email, departments, createdBy, phone } = req.data;
+    const email = req.params[0].email;
+    const { username, name, departments, phone } = req.data;
 
     // Prepare the updated data object
     const updatedData = {
       username,
       name,
-      email,
-      createdBy,
       phone,
     };
 
@@ -93,16 +91,11 @@ module.exports = async (srv) => {
     };
     try {
       const result = await mongoCollection.updateOne(
-        { _id: new ObjectId(id) },
+        { email: email },
         { $set: { ...updatedData, ...departmentUpdate } }
       );
-
-      if (result.modifiedCount === 1) {
-        console.log(`Successfully updated user with ID: ${id}`);
-        return { message: "User updated successfully" };
-      } else {
-        req.reject(404, "User not found or no changes made");
-      }
+      console.log(`updated with email${email}`);
+      return result;
     } catch (err) {
       console.error("Failed to update data in MongoDB", err);
       req.reject(500, "Failed to update data in MongoDB");
