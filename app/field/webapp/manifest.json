@@ -1,0 +1,163 @@
+{
+  "_version": "1.59.0",
+  "sap.app": {
+    "id": "com.airdit.agpp.fielduser.field",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.13.5",
+      "toolsId": "6971a5d0-33e5-49a5-b86f-e40185a6cdb2"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/field-user-services/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "dependencies": {
+      "minUI5Version": "1.124.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ushell": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "com.airdit.agpp.fielduser.field.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "fieldUserServiceList",
+          "target": "fieldUserServiceList"
+        },
+        {
+          "pattern": "fieldUserService({key}):?query:",
+          "name": "fieldUserServiceObjectPage",
+          "target": "fieldUserServiceObjectPage"
+        }
+      ],
+      "targets": {
+        "fieldUserServiceList": {
+          "type": "Component",
+          "id": "fieldUserServiceList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/fieldUserService",
+              "variantManagement": "Page",
+              "navigation": {
+                "fieldUserService": {
+                  "detail": {
+                    "route": "fieldUserServiceObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  },
+                  "actions": {
+                    "controller": {
+                      "press": ".extension.com.airdit.agpp.fielduser.field.ext.controller.FieldUserExt.onEditFieldUser",
+                      "visible": true,
+                      "enabled": true,
+                      "requiresSelection": true,
+                      "text": "Edit"
+                    },
+                    "delete": {
+                      "visible": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "fieldUserServiceObjectPage": {
+          "type": "Component",
+          "id": "fieldUserServiceObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/fieldUserService"
+            }
+          }
+        }
+      }
+    },
+    "extends": {
+      "extensions": {
+        "sap.ui.controllerExtensions": {
+          "sap.fe.templates.ListReport.ListReportController": {
+            "controllerName": "com.airdit.agpp.fielduser.field.ext.controller.FieldUserExt"
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}
